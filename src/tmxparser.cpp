@@ -120,13 +120,68 @@ TmxReturn _parseMapNode(tinyxml2::XMLElement* element, TmxMap* outMap)
 		return TmxReturn::kMissingMapNode;
 	}
 
-	outMap->version = element->Attribute("version");
-	outMap->orientation = element->Attribute("orientation");
-	outMap->width = element->UnsignedAttribute("width");
-	outMap->height = element->UnsignedAttribute("height");
-	outMap->tileWidth = element->UnsignedAttribute("tilewidth");
-	outMap->tileHeight = element->UnsignedAttribute("tileheight");
-	outMap->backgroundColor = element->Attribute("backgroundcolor");
+	if (element->Attribute("version"))
+	{
+		outMap->version = element->Attribute("version");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->Attribute("orientation"))
+	{
+		outMap->orientation = element->Attribute("orientation");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->UnsignedAttribute("width"))
+	{
+		outMap->width = element->UnsignedAttribute("width");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->UnsignedAttribute("height"))
+	{
+		outMap->height = element->UnsignedAttribute("height");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->UnsignedAttribute("tilewidth"))
+	{
+		outMap->tileWidth = element->UnsignedAttribute("tilewidth");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->UnsignedAttribute("tileheight"))
+	{
+		outMap->tileHeight = element->UnsignedAttribute("tileheight");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->Attribute("backgroundcolor"))
+	{
+		outMap->backgroundColor = element->Attribute("backgroundcolor");
+	}
+	else
+	{
+		outMap->backgroundColor = "";
+	}
 
 	TmxReturn error = _parsePropertyNode(element->FirstChildElement("properties"), &outMap->propertyMap);
 	if (error)
@@ -221,9 +276,23 @@ TmxReturn _parseImageNode(tinyxml2::XMLElement* element, TmxImage* outImage)
 
 	CHECK_AND_RETRIEVE_ATTRIBUTE_STRING(element, "trans", outImage->transparentColor);
 
-	//retVal.transparentColor = element->Attribute("trans");
-	outImage->width = element->UnsignedAttribute("width");
-	outImage->height = element->UnsignedAttribute("height");
+	if (element->UnsignedAttribute("width"))
+	{
+		outImage->width = element->UnsignedAttribute("width");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->UnsignedAttribute("height"))
+	{
+		outImage->height = element->UnsignedAttribute("height");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
 
 	return TmxReturn::kSuccess;
 }
@@ -234,12 +303,60 @@ TmxReturn _parseTilesetNode(tinyxml2::XMLElement* element, TmxTileset* outTilese
 
 	if (strcmp(element->Name(), "tileset") == 0)
 	{
-		outTileset->firstgid = element->UnsignedAttribute("firstgid");
-		outTileset->name = element->Attribute("name");
-		outTileset->tileWidth = element->UnsignedAttribute("tilewidth");
-		outTileset->tileHeight = element->UnsignedAttribute("tileheight");
-		outTileset->tileSpacingInImage = element->UnsignedAttribute("spacing");
-		outTileset->tileMarginInImage = element->UnsignedAttribute("margin");
+		if (element->UnsignedAttribute("firstgid"))
+		{
+			outTileset->firstgid = element->UnsignedAttribute("firstgid");
+		}
+		else
+		{
+			return TmxReturn::kMissingRequiredAttribute;
+		}
+
+		if (element->Attribute("name"))
+		{
+			outTileset->name = element->Attribute("name");
+		}
+		else
+		{
+			return TmxReturn::kMissingRequiredAttribute;
+		}
+	
+		if (element->UnsignedAttribute("tilewidth"))
+		{
+			outTileset->tileWidth = element->UnsignedAttribute("tilewidth");
+		}
+		else
+		{
+			return TmxReturn::kMissingRequiredAttribute;
+		}
+
+		if (element->UnsignedAttribute("tileheight"))
+		{
+			outTileset->tileHeight = element->UnsignedAttribute("tileheight");
+		}
+		else
+		{
+			return TmxReturn::kMissingRequiredAttribute;
+		}
+
+		if (element->UnsignedAttribute("spacing"))
+		{
+			outTileset->tileSpacingInImage = element->UnsignedAttribute("spacing");
+		}
+		else
+		{
+			outTileset->tileSpacingInImage = 0;
+		}
+
+		if (element->UnsignedAttribute("margin"))
+		{
+			outTileset->tileMarginInImage = element->UnsignedAttribute("margin");
+		}
+		else
+		{
+			outTileset->tileMarginInImage = 0;
+		}
+
 
 		TmxImage image;
 		TmxReturn error = _parseImageNode(element->FirstChildElement("image"), &outTileset->image);
@@ -282,11 +399,49 @@ TmxReturn _parseLayerNode(tinyxml2::XMLElement* element, const TmxTilesetCollect
 {
 	TmxReturn error = TmxReturn::kSuccess;
 
-	outLayer->name = element->Attribute("name");
-	outLayer->opacity = element->FloatAttribute("opacity");
-	outLayer->visible = element->IntAttribute("visible");
-	outLayer->width = element->UnsignedAttribute("width");
-	outLayer->height = element->UnsignedAttribute("height");
+	if (element->Attribute("name"))
+	{
+		outLayer->name = element->Attribute("name");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->FloatAttribute("opacity"))
+	{
+		outLayer->opacity = element->FloatAttribute("opacity");
+	}
+	else
+	{
+		outLayer->opacity = 1;
+	}
+
+	if (element->IntAttribute("visible"))
+	{
+		outLayer->visible = element->IntAttribute("visible");
+	}
+	else
+	{
+		outLayer->visible = 1;
+	}
+
+	if (element->UnsignedAttribute("width"))
+	{
+		outLayer->width = element->UnsignedAttribute("width");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+	if (element->UnsignedAttribute("height"))
+	{
+		outLayer->height = element->UnsignedAttribute("height");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
 
 	error = _parsePropertyNode(element->FirstChildElement("properties"), &outLayer->propertyMap);
 	if (error)
@@ -368,9 +523,16 @@ TmxReturn _parseObjectGroupNode(tinyxml2::XMLElement* element, TmxObjectGroup* o
 {
 	TmxReturn error = TmxReturn::kSuccess;
 
-	outObjectGroup->name = element->Attribute("name");
+	if (element->Attribute("name"))
+	{
+		outObjectGroup->name = element->Attribute("name");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
 
-	if (element->Attribute("opacity") != NULL)
+	if (element->Attribute("opacity"))
 	{
 		outObjectGroup->opacity = element->FloatAttribute("opacity");
 	}
@@ -379,7 +541,7 @@ TmxReturn _parseObjectGroupNode(tinyxml2::XMLElement* element, TmxObjectGroup* o
 		outObjectGroup->opacity = 1.0f;
 	}
 
-	if (element->Attribute("visible") != NULL)
+	if (element->Attribute("visible"))
 	{
 		outObjectGroup->visible = element->BoolAttribute("visible");
 	}
@@ -423,10 +585,43 @@ TmxReturn _parseObjectNode(tinyxml2::XMLElement* element, TmxObject* outObj)
 	{
 		outObj->type = element->Attribute("type");
 	}
-	outObj->x = element->IntAttribute("x");
-	outObj->y = element->IntAttribute("y");
-	outObj->width = element->IntAttribute("width");
-	outObj->height = element->IntAttribute("height");
+
+	if (element->IntAttribute("x"))
+	{
+		outObj->x = element->IntAttribute("x");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->IntAttribute("y"))
+	{
+		outObj->y = element->IntAttribute("y");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->IntAttribute("width"))
+	{
+		outObj->width = element->IntAttribute("width");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
+	if (element->IntAttribute("height"))
+	{
+		outObj->height = element->IntAttribute("height");
+	}
+	else
+	{
+		return TmxReturn::kMissingRequiredAttribute;
+	}
+
 	outObj->rotation = element->FloatAttribute("rotation");
 	outObj->referenceGid = element->UnsignedAttribute("gid");
 	outObj->visible = element->BoolAttribute("visible");
@@ -439,15 +634,15 @@ TmxReturn _parseObjectNode(tinyxml2::XMLElement* element, TmxObject* outObj)
 
 
 	tinyxml2::XMLElement* shapeElement = NULL;
-	if ((shapeElement = element->FirstChildElement("ellipse")) != NULL)
+	if ((shapeElement = element->FirstChildElement("ellipse")))
 	{
 		outObj->shapeType = kEllipse;
 	}
-	else if ((shapeElement = element->FirstChildElement("polygon")) != NULL)
+	else if ((shapeElement = element->FirstChildElement("polygon")))
 	{
 		outObj->shapeType = kPolygon;
 	}
-	else if ((shapeElement = element->FirstChildElement("polyline")) != NULL)
+	else if ((shapeElement = element->FirstChildElement("polyline")))
 	{
 		outObj->shapeType = kPolyline;
 	}
