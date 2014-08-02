@@ -55,7 +55,7 @@
 #endif
 
 
-#define CHECK_AND_RETRIEVE_ATTRIBUTE_STRING(XMLELEMENT, ATTRIBNAME, LHS) \
+//#define CHECK_AND_RETRIEVE_ATTRIBUTE_STRING(XMLELEMENT, ATTRIBNAME, LHS) \
 	if (XMLELEMENT->Attribute(ATTRIBNAME) != NULL) \
 	{ \
 		LHS = XMLELEMENT->Attribute(ATTRIBNAME); \
@@ -267,14 +267,33 @@ TmxReturn _parsePropertyNode(tinyxml2::XMLElement* element, TmxPropertyMap_t* ou
 
 TmxReturn _parseImageNode(tinyxml2::XMLElement* element, TmxImage* outImage)
 {
-	CHECK_AND_RETRIEVE_ATTRIBUTE_STRING(element, "source", outImage->source);
 
-	if (element->Attribute("format") != NULL)
+	if (element->Attribute("source"))
+	{
+		outImage->source = element->Attribute("source");
+	}
+	else
+	{
+		return kMissingRequiredAttribute;
+	}
+
+	if (element->Attribute("format"))
 	{
 		outImage->format = element->Attribute("format");
 	}
+	else
+	{
+		outImage->format = "";
+	}
 
-	CHECK_AND_RETRIEVE_ATTRIBUTE_STRING(element, "trans", outImage->transparentColor);
+	if (element->Attribute("trans"))
+	{
+		outImage->transparentColor = element->UnsignedAttribute("trans");
+	}
+	else
+	{
+		outImage->transparentColor = "";
+	}
 
 	if (element->UnsignedAttribute("width"))
 	{
@@ -417,9 +436,9 @@ TmxReturn _parseLayerNode(tinyxml2::XMLElement* element, const TmxTilesetCollect
 		outLayer->opacity = 1;
 	}
 
-	if (element->IntAttribute("visible"))
+	if (element->BoolAttribute("visible"))
 	{
-		outLayer->visible = element->IntAttribute("visible");
+		outLayer->visible = element->BoolAttribute("visible");
 	}
 	else
 	{
